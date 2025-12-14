@@ -1,0 +1,5 @@
+env/
+backend/.env
+code.html
+
+backend/media
