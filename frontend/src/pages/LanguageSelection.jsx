@@ -1,84 +1,90 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { announcementAPI } from '../services/api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { announcementAPI } from "../services/api";
 
 const LanguageSelection = () => {
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [connectionStatus, setConnectionStatus] = useState('idle'); // 'idle', 'testing', 'connected', 'error'
+  const [error, setError] = useState("");
+  const [connectionStatus, setConnectionStatus] = useState("idle"); // 'idle', 'testing', 'connected', 'error'
   const navigate = useNavigate();
 
   const nigerianLanguages = [
     {
       name: "Yoruba",
       code: "yo",
-      flag: "https://flagcdn.com/w320/ng.png"
+      flag: "https://flagcdn.com/w320/ng.png",
     },
     {
-      name: "Igbo", 
+      name: "Igbo",
       code: "ig",
-      flag: "https://flagcdn.com/w320/ng.png"
+      flag: "https://flagcdn.com/w320/ng.png",
     },
     {
       name: "Hausa",
-      code: "ha", 
-      flag: "https://flagcdn.com/w320/ng.png"
+      code: "ha",
+      flag: "https://flagcdn.com/w320/ng.png",
     },
     {
       name: "Pidgin English",
       code: "pcm",
-      flag: "https://flagcdn.com/w320/ng.png"
+      flag: "https://flagcdn.com/w320/ng.png",
     },
     {
       name: "English",
       code: "en",
-      flag: "https://flagcdn.com/w320/ng.png"
-    }
+      flag: "https://flagcdn.com/w320/ng.png",
+    },
   ];
 
   // Test backend connection on component mount
   const testBackendConnection = async () => {
-    setConnectionStatus('testing');
+    setConnectionStatus("testing");
     try {
       // Since you don't have a test endpoint, let's try to fetch history
       await announcementAPI.getHistory();
-      setConnectionStatus('connected');
+      setConnectionStatus("connected");
     } catch (error) {
-      setConnectionStatus('error');
-      console.error('Backend connection test failed:', error);
+      setConnectionStatus("error");
+      console.error("Backend connection test failed:", error);
     }
   };
 
   const handleLanguageSelect = (language) => {
-    setError('');
-    const isSelected = selectedLanguages.some(lang => lang.code === language.code);
-    
+    setError("");
+    const isSelected = selectedLanguages.some(
+      (lang) => lang.code === language.code
+    );
+
     if (isSelected) {
-      setSelectedLanguages(prev => prev.filter(lang => lang.code !== language.code));
+      setSelectedLanguages((prev) =>
+        prev.filter((lang) => lang.code !== language.code)
+      );
     } else {
-      setSelectedLanguages(prev => [...prev, language]);
+      setSelectedLanguages((prev) => [...prev, language]);
     }
   };
 
   const handleContinue = async () => {
     if (selectedLanguages.length === 0) {
-      setError('Please select at least one language');
+      setError("Please select at least one language");
       return;
     }
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
       // Prepare languages for backend
-      const backendLanguages = selectedLanguages.map(lang => lang.code);
-      
+      const backendLanguages = selectedLanguages.map((lang) => lang.code);
+
       // Test backend connection first
       await testBackendConnection();
-      
-      if (connectionStatus === 'error') {
-        setError('Cannot connect to backend server. Please make sure your Django server is running on port 8000.');
+
+      if (connectionStatus === "error") {
+        setError(
+          "Cannot connect to backend server. Please make sure your Django server is running on port 8000."
+        );
         setIsLoading(false);
         return;
       }
@@ -87,25 +93,26 @@ const LanguageSelection = () => {
       const languageData = {
         languages: backendLanguages,
         languageObjects: selectedLanguages,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
-      
-      localStorage.setItem('selectedLanguages', JSON.stringify(languageData));
-      console.log('Languages saved to localStorage:', languageData);
+
+      localStorage.setItem("selectedLanguages", JSON.stringify(languageData));
+      console.log("Languages saved to localStorage:", languageData);
 
       // Navigate to microphone setup
-      navigate('/mic-setup');
-      
+      navigate("/mic-setup");
     } catch (err) {
-      setError('Failed to connect to backend server. Please check if the server is running.');
-      console.error('Connection error:', err);
+      setError(
+        "Failed to connect to backend server. Please check if the server is running."
+      );
+      console.error("Connection error:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
   const isLanguageSelected = (languageCode) => {
-    return selectedLanguages.some(lang => lang.code === languageCode);
+    return selectedLanguages.some((lang) => lang.code === languageCode);
   };
 
   return (
@@ -123,24 +130,28 @@ const LanguageSelection = () => {
               <p className="text-sm text-gray-500 mt-1">
                 Selected: {selectedLanguages.length} language(s)
               </p>
-              
+
               {/* Connection Status */}
               <div className="mt-4">
-                {connectionStatus === 'testing' && (
+                {connectionStatus === "testing" && (
                   <div className="flex items-center justify-center gap-2 text-yellow-600">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600"></div>
                     Testing backend connection...
                   </div>
                 )}
-                {connectionStatus === 'connected' && (
+                {connectionStatus === "connected" && (
                   <div className="text-green-600 flex items-center justify-center gap-2">
-                    <span className="material-symbols-outlined text-lg">check_circle</span>
+                    <span className="material-symbols-outlined text-lg">
+                      check_circle
+                    </span>
                     Backend connected successfully
                   </div>
                 )}
-                {connectionStatus === 'error' && (
+                {connectionStatus === "error" && (
                   <div className="text-red-600 flex items-center justify-center gap-2">
-                    <span className="material-symbols-outlined text-lg">error</span>
+                    <span className="material-symbols-outlined text-lg">
+                      error
+                    </span>
                     Cannot connect to backend
                   </div>
                 )}
@@ -154,9 +165,12 @@ const LanguageSelection = () => {
                   <span className="material-symbols-outlined">warning</span>
                   {error}
                 </div>
-                {connectionStatus === 'error' && (
+                {connectionStatus === "error" && (
                   <p className="text-sm mt-2">
-                    Make sure your Django server is running: <code className="bg-gray-200 px-1 rounded">python manage.py runserver</code>
+                    Make sure your Django server is running:{" "}
+                    <code className="bg-gray-200 px-1 rounded">
+                      python manage.py runserver
+                    </code>
                   </p>
                 )}
               </div>
@@ -171,11 +185,11 @@ const LanguageSelection = () => {
                   disabled={isLoading}
                   className={`w-full flex items-center p-4 rounded-xl shadow hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${
                     isLanguageSelected(language.code)
-                      ? 'bg-primary/20 border-2 border-primary'
-                      : 'bg-neutral-white border-2 border-gray-200'
+                      ? "bg-primary/20 border-2 border-primary"
+                      : "bg-neutral-white border-2 border-gray-200"
                   }`}
                 >
-                  <div 
+                  <div
                     className="w-20 h-14 rounded-lg bg-cover bg-center mr-4 border"
                     style={{ backgroundImage: `url('${language.flag}')` }}
                   ></div>
@@ -197,10 +211,10 @@ const LanguageSelection = () => {
             </div>
           </div>
         </main>
-        
+
         <footer className="p-4 sm:p-6 lg:p-8">
           <div className="w-full max-w-2xl mx-auto">
-            <button 
+            <button
               onClick={handleContinue}
               disabled={isLoading || selectedLanguages.length === 0}
               className="w-full bg-accent text-primary font-bold py-4 px-6 rounded-2xl shadow-lg hover:opacity-90 transition-all duration-300 text-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
@@ -214,12 +228,15 @@ const LanguageSelection = () => {
                 `Confirm & Continue (${selectedLanguages.length} selected)`
               )}
             </button>
-            
+
             {/* Debug info - Always show in development */}
             <div className="mt-4 p-2 bg-gray-100 rounded-lg">
               <p className="text-xs text-gray-600">
-                <strong>Backend URL:</strong> {import.meta.env.VITE_API_URL}<br/>
-                <strong>Selected languages:</strong> {selectedLanguages.map(l => l.code).join(', ')}<br/>
+                <strong>Backend URL:</strong> {import.meta.env.VITE_API_URL}
+                <br />
+                <strong>Selected languages:</strong>{" "}
+                {selectedLanguages.map((l) => l.code).join(", ")}
+                <br />
                 <strong>LocalStorage key:</strong> selectedLanguages
               </p>
             </div>
