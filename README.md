@@ -9,7 +9,7 @@
 
 **Voice-Bridge** is an AI-powered multilingual announcement system that breaks down language barriers by automatically translating and generating voice announcements.
 
-Perfect for government agencies, transportation hubs, educational institutions, healthcare facilities, and any organization that needs to communicate effectively across Nigeria's diverse linguistic landscape.
+Perfect for government agencies, transportation hubs, educational institutions, healthcare facilities, and any organization that needs to communicate effectively
 
 ## ✨ Features
 
